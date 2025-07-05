@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/assets/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+
+<body style="overflow-y:scroll;">
+
+    <script src="./assets/lib/vue/vue.global.prod.js"></script>
+
+    <div class="container-fluid">
+        {% block content %}{% endblock %}
+    </div>
+
+    <br></br>
+    <footer class="border-top footer text-muted">
+        <div class="row">
+            <div class="col">
+                <p>
+                    &copy; 2025, Nick Mokhnatov. <a href="https://github.com/softilium" target="_blank">GitHub</a></p>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <script src="./assets/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

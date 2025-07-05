@@ -1,0 +1,215 @@
+{% extends "layout.html" %}
+
+{% block title %}Elorm todo sample app{% endblock %}
+
+{% block content %}
+
+<h1>Elorm todo sample app</h1>
+
+<div id="vueapp">
+
+    <div clas="row">
+        <button class="btn btn-danger" @click="clearData()">Clear data</button>&nbsp;
+        <button class="btn btn-danger" @click="seedData">Seed data</button>&nbsp;
+        ${ seedingStatus }
+    </div>&nbsp;
+
+    <div class="row">
+
+        <div class="col">
+
+            <nav>
+                <ul class="pagination">
+                    <li v-for="n in users.Total" :class="`${n && n==curUserPageNo ? 'page-item active' : 'page-item'}`">
+                        <a class="page-link" href="#" @click="goUsersPage(n)">${n}</a>
+                    </li>
+                </ul>
+            </nav>
+            <table class="table">
+                <thead>
+                    <th class="col-6">User name</th>
+                    <th class="col-6">Email</th>
+                </thead>
+                <tbody>
+                    <tr :class="`${u.Ref==curUserRef ? 'table-primary' : ''}`" v-for="u in users.Data" @click="selUser(u.Ref)">
+                        <td class="col-6">${ u.Username }</td>
+                        <td class="col-6">${ u.Email }</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <div v-if="curUserRef">
+
+                <div class="row">
+                    <nav>
+                        <ul class="pagination">
+                            <li v-for="n in todos.Total" :class="`${n && n==curTodoPageNo ? 'page-item active' : 'page-item'}`">
+                                <a class="page-link" href="#" @click="goTodoPage(n)">${n}</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <table class="table">
+                        <thead>
+                            <th class="col-4">Title</th>
+                            <th class="col-4">Description</th>
+                            <th class="col-4">Due date</th>
+                        </thead>
+                        <tbody>
+                            <tr :class="`${t.Ref==curTodoRef ? 'table-primary' : ''}`" v-for="t in todos.Data" @click="selTodo(t.Ref)">
+                                <td class="col-4">${ t.Title }</td>
+                                <td class="col-4">${ t.Description }</td>
+                                <td class="col-4">${ t.DueDate }</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-if="curTodoRef">
+                    <h2>Comments</h2>
+                    <table class="table">
+                        <thead>
+                            <th class="col">Content</th>
+                        </thead>
+                        <tbody>
+                            <tr v-for="c in comments.Data">
+                                <td class="col">${ c.Content }</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div v-else>
+                    <h2>Select a user to see todo items</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+
+        const pageSize = 5;
+        const App = {
+            delimiters: ['${', '}'],
+            data() {
+                return {
+
+                    seedingStatus: '',
+
+                    users: {
+                        Data: [],
+                        Total: 0,
+                    },
+                    curUserPageNo: 1,
+                    curUserRef: null,
+
+                    todos: {
+                        Data: [],
+                        Total: 0,
+                    },
+                    curTodoPageNo: 1,
+                    curTodoRef: null,
+
+                    comments: {
+                        Data: [],
+                        Total: 0,
+                    },
+                }
+            },
+            methods: {
+
+                async clearData() {
+                    let res = await fetch('/api/clear', {
+                        method: 'POST',
+                    })
+                    if (res.ok) {
+                        this.goUsersPage(1);
+                    }
+                },
+
+                async seedData() {
+                    this.seedingStatus = 'Seeding...';
+                    let res = await fetch('/api/seed', {
+                        method: 'POST',
+                    })
+                    if (res.ok) {
+                        this.goUsersPage(1);
+                    }
+                    this.seedingStatus = '';
+                },
+
+                async selUser(ref) {
+                    this.curUserRef = ref;
+                    this.goTodosPage(1);
+                },
+                async selTodo(ref) {
+                    this.curTodoRef = ref;
+                    this.goCommentsPage(1);
+                },
+
+                async goCommentsPage(pageNo) {
+                    if (!this.curTodoRef) {
+                        this.comments = { Data: [], Total: 0 };
+                        return;
+                    }
+                    let res = await fetch(`/api/comments?&todoitem=${this.curTodoRef}`, {
+                        method: 'GET',
+                    })
+                    if (res.ok) {
+                        res = await res.json();
+                        this.comments = res;
+                    }
+                },
+
+                async goTodoPage(pageNo) {
+                    this.curTodoPageNo = pageNo;
+                    this.curTodoRef = null;
+                    let res = await fetch(`/api/todos?pagesize=${pageSize}&pageno=${this.curTodoPageNo}&Owner=${this.curUserRef}`, {
+                        method: 'GET',
+                    })
+                    if (res.ok) {
+                        res = await res.json();
+                        this.todos = res;
+
+                        goCommentsPage(1);
+                    }
+                },
+
+                async goUsersPage(pageNo) {
+                    this.curUserPageNo = pageNo;
+                    this.curUserRef = null;
+                    let res = await fetch(`/api/users?pagesize=${pageSize}&pageno=${this.curUserPageNo}`, {
+                        method: 'GET',
+                    })
+                    if (res.ok) {
+                        res = await res.json();
+                        this.users = res;
+                        this.goTodosPage(1);
+                    }
+                },
+                async goTodosPage(pageNo) {
+                    if (!this.curUserRef) {
+                        this.todos = { Data: [], Total: 0 };
+                        return;
+                    }
+                    this.curTodoRef = null;
+                    this.curTodoPageNo = pageNo;
+                    this.curTodoPageNo = pageNo;
+                    let res = await fetch(`/api/todos?Owner=${this.curUserRef}&pagesize=${pageSize}&pageno=${this.curTodoPageNo}`, {
+                        method: 'GET',
+                    })
+                    if (res.ok) {
+                        res = await res.json();
+                        this.todos = res;
+                    }
+                }
+            },
+            async mounted() {
+                this.goUsersPage(1);
+            }
+        };
+
+        Vue.createApp(App).mount('#vueapp')
+
+    </script>
+
+    {% endblock %}

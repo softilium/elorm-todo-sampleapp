@@ -1,0 +1,124 @@
+{
+    "PackageName": "models",
+    "Entities": [
+        {
+            "ObjectName": "User",
+            "TableName": "Users",
+            "Columns": [
+                {
+                    "Name": "Username",
+                    "ColumnType": "string",
+                    "Len": 50
+                },
+                {
+                    "Name": "Email",
+                    "ColumnType": "string",
+                    "Len": 100
+                },
+                {
+                    "Name": "PasswordHash",
+                    "ColumnType": "string",
+                    "Len": 256
+                },
+                {
+                    "Name": "LastLoginDate",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "Name": "IsActive",
+                    "ColumnType": "bool"
+                }
+            ]
+        },
+        {
+            "ObjectName": "Tag",
+            "TableName": "Tags",
+            "Columns": [
+                {
+                    "Name": "Name",
+                    "ColumnType": "string",
+                    "Len": 15
+                },
+                {
+                    "Name": "Color",
+                    "ColumnType": "string",
+                    "Len": 20
+                }
+            ]
+        },
+        {
+            "ObjectName": "TodoItem",
+            "TableName": "TodoItems",
+            "Columns": [
+                {
+                    "Name": "Title",
+                    "ColumnType": "string",
+                    "Len": 200
+                },
+                {
+                    "Name": "Description",
+                    "ColumnType": "string",
+                    "Len": 500
+                },
+                {
+                    "Name": "Owner",
+                    "ColumnType": "ref.User"
+                },
+                {
+                    "Name": "DueDate",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "Name": "IsCompleted",
+                    "ColumnType": "bool"
+                },
+                {
+                    "Name": "CompletedDate",
+                    "ColumnType": "datetime"
+                },
+                {
+                    "Name": "Priority",
+                    "ColumnType": "int"
+                }
+            ]
+        },
+        {
+            "ObjectName": "TagInstance",
+            "TableName": "TagInstances",
+            "Columns": [
+                {
+                    "Name": "Tag",
+                    "ColumnType": "ref.Tag",
+                    "Len": 15
+                },
+                {
+                    "Name": "TodoItem",
+                    "ColumnType": "ref.TodoItem"
+                }
+            ]
+        },
+        {
+            "ObjectName": "TodoComment",
+            "TableName": "TodoComments",
+            "Columns": [
+                {
+                    "Name": "TodoItem",
+                    "ColumnType": "ref.TodoItem"
+                },
+                {
+                    "Name": "Author",
+                    "ColumnType": "ref.User"
+                },
+                {
+                    "Name": "Content",
+                    "ColumnType": "string",
+                    "Len": 500
+                },
+                {
+                    "Name": "CreatedDate",
+                    "ColumnType": "datetime"
+                }
+            ]
+        }
+    ]
+}
