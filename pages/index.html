@@ -69,10 +69,12 @@
                     <table class="table">
                         <thead>
                             <th class="col">Content</th>
+                            <th></th>
                         </thead>
                         <tbody>
                             <tr v-for="c in comments.Data">
                                 <td class="col">${ c.Content }</td>
+                                <td><button @click="delComment(c.Ref)">delete</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -200,6 +202,14 @@
                     if (res.ok) {
                         res = await res.json();
                         this.todos = res;
+                    }
+                },
+                async delComment(ref) {
+                    let res = await fetch(`/api/comments?ref=${ref}`, {
+                        method: 'DELETE',
+                    })
+                    if (res.ok) {
+                        this.goCommentsPage(1);
                     }
                 }
             },
