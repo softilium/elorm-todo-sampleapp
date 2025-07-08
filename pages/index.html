@@ -29,11 +29,13 @@
                 <thead>
                     <th class="col-6">User name</th>
                     <th class="col-6">Email</th>
+                    <th></th>
                 </thead>
                 <tbody>
                     <tr :class="`${u.Ref==curUserRef ? 'table-primary' : ''}`" v-for="u in users.Data" @click="selUser(u.Ref)">
                         <td class="col-6">${ u.Username }</td>
                         <td class="col-6">${ u.Email }</td>
+                        <td><button @click="delUser(u.Ref)">delete</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -54,12 +56,14 @@
                             <th class="col-4">Title</th>
                             <th class="col-4">Description</th>
                             <th class="col-4">Due date</th>
+                            <th></th>
                         </thead>
                         <tbody>
                             <tr :class="`${t.Ref==curTodoRef ? 'table-primary' : ''}`" v-for="t in todos.Data" @click="selTodo(t.Ref)">
                                 <td class="col-4">${ t.Title }</td>
                                 <td class="col-4">${ t.Description }</td>
                                 <td class="col-4">${ t.DueDate }</td>
+                                <td><button @click="delTodo(t.Ref)">delete</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -171,8 +175,7 @@
                     if (res.ok) {
                         res = await res.json();
                         this.todos = res;
-
-                        goCommentsPage(1);
+                        this.goCommentsPage(1);
                     }
                 },
 
@@ -210,6 +213,23 @@
                     })
                     if (res.ok) {
                         this.goCommentsPage(1);
+                    }
+                },
+                async delTodo(ref) {
+                    let res = await fetch(`/api/todos?ref=${ref}`, {
+                        method: 'DELETE',
+                    })
+                    if (res.ok) {
+                        this.goTodoPage(this.curTodoPageNo);
+                    }
+                },
+                async delUser(ref) {
+                    let res = await fetch(`/api/users?ref=${ref}`, {
+                        method: 'DELETE',
+                    })
+                    if (res.ok) {
+                        this.goUsersPage(this.curUserPageNo);
+                        this.curTodoRef = null;
                     }
                 }
             },

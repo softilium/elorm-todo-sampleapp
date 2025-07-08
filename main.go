@@ -15,6 +15,8 @@ import (
 	"github.com/flosch/pongo2/v6"
 
 	_ "modernc.org/sqlite"
+
+	_ "github.com/lib/pq"
 )
 
 var dbc *DbContext
@@ -162,8 +164,9 @@ func gracefullShutdown(server *http.Server, quit <-chan os.Signal, done chan<- b
 
 func main() {
 
-	dbc, err = CreateDbContext("sqlite", "./todo.db")
+	dbc, err = CreateDbContext("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", "localhost", 5432, "postgres", "0000", "todo"))
 	logErr(err)
+	dbc.setHandlers()
 
 	err = dbc.EnsureDBStructure()
 	logErr(err)
@@ -177,7 +180,7 @@ func main() {
 	server := initServer(listenAddr)
 	go gracefullShutdown(server, quit, done)
 
-	log.Println("Server is ready to handle requests at", listenAddr)
+	log.Println("Server is ready to handle requests at http://", listenAddr)
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("could not listen on %s: %v\n", listenAddr, err.Error())
