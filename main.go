@@ -180,7 +180,7 @@ func main() {
 	server := initServer(listenAddr)
 	go gracefullShutdown(server, quit, done)
 
-	log.Println("Server is ready to handle requests at http://", listenAddr)
+	log.Printf("Server is ready to handle requests at http://%s\n", listenAddr)
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("could not listen on %s: %v\n", listenAddr, err.Error())
