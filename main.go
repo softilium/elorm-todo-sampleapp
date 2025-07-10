@@ -164,6 +164,7 @@ func gracefullShutdown(server *http.Server, quit <-chan os.Signal, done chan<- b
 
 func main() {
 
+	// nested transactions are not supported by sqlite, so we use postgres
 	dbc, err = CreateDbContext("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", "localhost", 5432, "postgres", "0000", "todo"))
 	logErr(err)
 	dbc.setHandlers()
