@@ -17,7 +17,6 @@
     <div class="row">
 
         <div class="col">
-
             <nav>
                 <ul class="pagination">
                     <li v-for="n in users.Total" :class="`${n && n==curUserPageNo ? 'page-item active' : 'page-item'}`">
@@ -27,8 +26,16 @@
             </nav>
             <table class="table">
                 <thead>
-                    <th class="col-6">User name</th>
-                    <th class="col-6">Email</th>
+                    <th class="col-6">
+                        <a @click="sortUsers('UserName')">
+                            <div v-html="`User name ${ sortTitle(curUserSortField=='UserName' , curUserSortDir) }`"></div>
+                        </a>
+                    </th>
+                    <th class="col-6">
+                        <a @click="sortUsers('Email')">
+                            <div v-html="`Email ${ sortTitle(curUserSortField=='Email' , curUserSortDir) }`"></div>
+                        </a>
+                    </th>
                     <th></th>
                 </thead>
                 <tbody>
@@ -53,9 +60,21 @@
                     </nav>
                     <table class="table">
                         <thead>
-                            <th class="col-4">Title</th>
-                            <th class="col-4">Description</th>
-                            <th class="col-4">Due date</th>
+                            <th class="col-6">
+                                <a @click="sortTodo('Title')">
+                                    <div v-html="`Title ${ sortTitle(curTodoSortField=='Title' , curTodoSortDir) }`"></div>
+                                </a>
+                            </th>
+                            <th class="col-6">
+                                <a @click="sortTodo('Description')">
+                                    <div v-html="`Description ${ sortTitle(curTodoSortField=='Description' , curTodoSortDir) }`"></div>
+                                </a>
+                            </th>
+                            <th class="col-6">
+                                <a @click="sortTodo('DueDate')">
+                                    <div v-html="`Due date ${ sortTitle(curTodoSortField=='DueDate' , curTodoSortDir) }`"></div>
+                                </a>
+                            </th>
                             <th></th>
                         </thead>
                         <tbody>
@@ -107,6 +126,8 @@
                     },
                     curUserPageNo: 1,
                     curUserRef: null,
+                    curUserSortField: '',
+                    curUserSortDir: 'asc',
 
                     todos: {
                         Data: [],
@@ -114,6 +135,8 @@
                     },
                     curTodoPageNo: 1,
                     curTodoRef: null,
+                    curTodoSortField: '',
+                    curTodoSortDir: 'asc',
 
                     comments: {
                         Data: [],
@@ -122,6 +145,30 @@
                 }
             },
             methods: {
+
+                sortTitle(show, dir) {
+                    return `${show ? ' ' + (dir == 'asc' ? '&#8595;' : '&#8593;') : ''}`;
+                },
+
+                async sortUsers(fieldName) {
+                    if (this.curUserSortField == fieldName) {
+                        this.curUserSortDir = this.curUserSortDir == 'asc' ? 'desc' : 'asc';
+                    } else {
+                        this.curUserSortField = fieldName;
+                        this.curUserSortDir = 'asc';
+                    }
+                    this.goUsersPage(this.curUserPageNo);
+                },
+
+                async sortTodo(fieldName) {
+                    if (this.curTodoSortField == fieldName) {
+                        this.curTodoSortDir = this.curTodoSortDir == 'asc' ? 'desc' : 'asc';
+                    } else {
+                        this.curTodoSortField = fieldName;
+                        this.curTodoSortDir = 'asc';
+                    }
+                    this.goTodoPage(this.curTodoPageNo);
+                },
 
                 async clearData() {
                     let res = await fetch('/api/clear', {
@@ -145,7 +192,7 @@
 
                 async selUser(ref) {
                     this.curUserRef = ref;
-                    this.goTodosPage(1);
+                    this.goTodoPage(1);
                 },
                 async selTodo(ref) {
                     this.curTodoRef = ref;
@@ -167,9 +214,13 @@
                 },
 
                 async goTodoPage(pageNo) {
+                    if (!this.curUserRef) {
+                        this.todos = { Data: [], Total: 0 };
+                        return;
+                    }
                     this.curTodoPageNo = pageNo;
                     this.curTodoRef = null;
-                    let res = await fetch(`/api/todos?pagesize=${pageSize}&pageno=${this.curTodoPageNo}&Owner=${this.curUserRef}`, {
+                    let res = await fetch(`/api/todos?pagesize=${pageSize}&pageno=${this.curTodoPageNo}&Owner=${this.curUserRef}&sortby=${this.curTodoSortField + ' ' + this.curTodoSortDir}`, {
                         method: 'GET',
                     })
                     if (res.ok) {
@@ -182,29 +233,13 @@
                 async goUsersPage(pageNo) {
                     this.curUserPageNo = pageNo;
                     this.curUserRef = null;
-                    let res = await fetch(`/api/users?pagesize=${pageSize}&pageno=${this.curUserPageNo}`, {
+                    let res = await fetch(`/api/users?pagesize=${pageSize}&pageno=${this.curUserPageNo}&sortby=${this.curUserSortField + ' ' + this.curUserSortDir}`, {
                         method: 'GET',
                     })
                     if (res.ok) {
                         res = await res.json();
                         this.users = res;
-                        this.goTodosPage(1);
-                    }
-                },
-                async goTodosPage(pageNo) {
-                    if (!this.curUserRef) {
-                        this.todos = { Data: [], Total: 0 };
-                        return;
-                    }
-                    this.curTodoRef = null;
-                    this.curTodoPageNo = pageNo;
-                    this.curTodoPageNo = pageNo;
-                    let res = await fetch(`/api/todos?Owner=${this.curUserRef}&pagesize=${pageSize}&pageno=${this.curTodoPageNo}`, {
-                        method: 'GET',
-                    })
-                    if (res.ok) {
-                        res = await res.json();
-                        this.todos = res;
+                        this.goTodoPage(1);
                     }
                 },
                 async delComment(ref) {
