@@ -39,7 +39,7 @@ func handleHttpErr(err error, w http.ResponseWriter) {
 func seed(onlyClean bool) {
 	recs := 30
 	for _, ed := range dbc.EntityDefs {
-		_, err := dbc.DB.Exec(fmt.Sprintf("delete from %s", ed.TableName))
+		_, err := dbc.Exec(fmt.Sprintf("delete from %s", ed.TableName))
 		logErr(err)
 	}
 
@@ -169,6 +169,12 @@ func main() {
 	dbc, err = CreateDbContext("sqlite", "file:todo.db?cache=shared")
 	logErr(err)
 	dbc.setHandlers()
+
+	err = dbc.TodoItemDef.AddIndex(false, *dbc.TodoItemDef.Owner)
+	logErr(err)
+
+	err = dbc.TodoCommentDef.AddIndex(false, *dbc.TodoCommentDef.TodoItem)
+	logErr(err)
 
 	err = dbc.EnsureDBStructure()
 	logErr(err)
