@@ -53,7 +53,7 @@ func seed(onlyClean bool) {
 
 		user.SetUsername(fmt.Sprintf("User %d", i+1))
 		user.SetEmail(fmt.Sprintf("user%d@gmail.com", i+1))
-		err = user.Save()
+		err = user.Save(context.Background())
 		logErr(err)
 
 		for ii := range recs {
@@ -63,7 +63,7 @@ func seed(onlyClean bool) {
 			todo.SetDescription(fmt.Sprintf("Description for Todo %d for User %d", ii+1, i+1))
 			todo.SetOwner(user)
 			todo.SetDueDate(time.Now().Add(time.Duration(ii+1) * time.Hour * 24))
-			err = todo.Save()
+			err = todo.Save(context.Background())
 			logErr(err)
 
 			for iii := range 3 {
@@ -73,7 +73,7 @@ func seed(onlyClean bool) {
 				cmt.SetAuthor(user)
 				cmt.SetContent(fmt.Sprintf("Comment %d for Todo %d for User %d", iii+1, ii+1, i+1))
 
-				err = cmt.Save()
+				err = cmt.Save(context.Background())
 				logErr(err)
 			}
 		}
