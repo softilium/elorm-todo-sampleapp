@@ -108,6 +108,7 @@ func initServer(listenAddr string) *http.Server {
 		dbc.LoadUser,
 		dbc.UserDef.SelectEntities,
 		dbc.CreateUser)
+	usersRestApiConfig.EnableSoftDelete = false
 	router.HandleFunc("/api/users", elorm.HandleRestApi(usersRestApiConfig))
 
 	todosRestApiConfig := elorm.CreateStdRestApiConfig(
@@ -115,6 +116,7 @@ func initServer(listenAddr string) *http.Server {
 		dbc.LoadTodoItem,
 		dbc.TodoItemDef.SelectEntities,
 		dbc.CreateTodoItem)
+	todosRestApiConfig.EnableSoftDelete = false
 	router.HandleFunc("/api/todos", elorm.HandleRestApi(todosRestApiConfig))
 
 	commentsRestApiConfig := elorm.CreateStdRestApiConfig(
@@ -122,6 +124,7 @@ func initServer(listenAddr string) *http.Server {
 		dbc.LoadTodoComment,
 		dbc.TodoCommentDef.SelectEntities,
 		dbc.CreateTodoComment)
+	commentsRestApiConfig.EnableSoftDelete = false
 	router.HandleFunc("/api/comments", elorm.HandleRestApi(commentsRestApiConfig))
 
 	router.HandleFunc("/api/seed", func(w http.ResponseWriter, r *http.Request) {
