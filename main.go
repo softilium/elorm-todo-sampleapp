@@ -104,21 +104,21 @@ func initServer(listenAddr string) *http.Server {
 	router.Handle("/assets/", http.StripPrefix("/assets", fs))
 
 	usersRestApiConfig := elorm.CreateStdRestApiConfig(
-		*dbc.UserDef.EntityDef,
+		dbc.UserDef.EntityDef,
 		dbc.LoadUser,
 		dbc.UserDef.SelectEntities,
 		dbc.CreateUser)
 	router.HandleFunc("/api/users", elorm.HandleRestApi(usersRestApiConfig))
 
 	todosRestApiConfig := elorm.CreateStdRestApiConfig(
-		*dbc.TodoItemDef.EntityDef,
+		dbc.TodoItemDef.EntityDef,
 		dbc.LoadTodoItem,
 		dbc.TodoItemDef.SelectEntities,
 		dbc.CreateTodoItem)
 	router.HandleFunc("/api/todos", elorm.HandleRestApi(todosRestApiConfig))
 
 	commentsRestApiConfig := elorm.CreateStdRestApiConfig(
-		*dbc.TodoCommentDef.EntityDef,
+		dbc.TodoCommentDef.EntityDef,
 		dbc.LoadTodoComment,
 		dbc.TodoCommentDef.SelectEntities,
 		dbc.CreateTodoComment)
