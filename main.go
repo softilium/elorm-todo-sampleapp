@@ -170,10 +170,10 @@ func main() {
 	logErr(err)
 	dbc.setHandlers()
 
-	err = dbc.TodoItemDef.AddIndex(false, *dbc.TodoItemDef.Owner)
+	err = dbc.TodoItemDef.AddIndex(false, dbc.TodoItemDef.Owner)
 	logErr(err)
 
-	err = dbc.TodoCommentDef.AddIndex(false, *dbc.TodoCommentDef.TodoItem)
+	err = dbc.TodoCommentDef.AddIndex(false, dbc.TodoCommentDef.TodoItem)
 	logErr(err)
 
 	err = dbc.EnsureDBStructure()

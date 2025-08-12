@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/lib/pq v1.10.9
-	github.com/softilium/elorm v0.6.0
+	github.com/softilium/elorm v0.12.0
 	modernc.org/sqlite v1.38.2
 )
 
@@ -28,4 +28,4 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 )
 
-replace github.com/softilium/elorm => ../elorm
+//replace github.com/softilium/elorm => ../elorm
